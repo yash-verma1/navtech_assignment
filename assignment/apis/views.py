@@ -13,10 +13,24 @@ class Create_Order(APIView):
     """
 
     def post(self, request):
-        
+        response = "Failure! Please check request"
+        user = request.data['user']
+        product_name = request.data['name']
+        quantity = request.data['quantity']
+        prod_price = Products.objects.filter(product_name=product_name).values('price')
+        total = int(prod_price[0]['price']) * int(quantity)
+        new_order = Orders.objects.create(
+            user=user,
+            product_name=product_name,
+            total=total,
+            quantity=quantity
+        )
+
+        if new_order:
+            response = "Success!"
 
 
-        return Response("Successfully created an order!")
+        return Response(response)
 
 
 class Upload_Products(APIView):
@@ -27,14 +41,12 @@ class Upload_Products(APIView):
     """    
 
     def post(self, request):
-        # import pdb; 
-        # pdb.set_trace()
         response = "Failure! Please check request"
         product_name = request.data['name']
         prod_obj = Products.objects.filter(product_name=product_name)
-        if prod_obj:
-            prod_obj.price = request.data['price']
-            prod_obj.quantity = request.data['quantity']
+        if prod_obj.count() > 0:          
+            prod_obj.update(price=request.data['price'])
+            prod_obj.update(quantity=request.data['quantity'])
             response = "Successfully updated products to catalog"
         else: 
             product_name = product_name
@@ -57,7 +69,6 @@ class View_Products(APIView):
     def get(self, request):
         res = []
         for prod in Products.objects.all():
-            # res.append( [ 'name':prod.name, 'price': prod.price'': 'quantity': prod.quantity])
             item = {'name':prod.product_name, 'price': prod.price, 'quantity': prod.quantity}
             res.append(item)
         return Response(res)

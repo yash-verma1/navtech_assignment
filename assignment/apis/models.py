@@ -16,7 +16,7 @@ class Products(models.Model):
 
 
 class Orders(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    user = models.CharField(max_length=150)
     product_name = models.CharField(max_length=150)
     quantity = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
