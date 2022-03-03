@@ -72,3 +72,14 @@ class View_Products(APIView):
             item = {'name':prod.product_name, 'price': prod.price, 'quantity': prod.quantity}
             res.append(item)
         return Response(res)
+
+class View_Orders(APIView):
+    """
+        API to view all orders stored in DB
+    """
+    def get(self, request):
+        res = []
+        for order in Orders.objects.all():
+            item = {'user': order.user , 'name':order.product_name, 'total': order.total, 'quantity': order.quantity}
+            res.append(item)
+        return Response(res)
